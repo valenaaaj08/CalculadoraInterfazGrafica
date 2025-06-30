@@ -1,4 +1,3 @@
-// Valentino Tropea, Mauro Zielinski, Facundo Scardaoni, Valentin Von Korff
 
 import java.awt.EventQueue;
 import javax.swing.JTextArea;
@@ -38,7 +37,7 @@ public class Interfaz extends JFrame {
 	private JButton botonAc;
 	private JButton botonPunto;
 	private JButton botonSuma;
-	private JLabel lblOperacionesBasicas;
+	private JLabel label_operaciones_basicas;
 	private JButton botonVectores;
 	private JLabel lblOperacionesVectores;
 	private JButton botonMatrices;
@@ -48,7 +47,7 @@ public class Interfaz extends JFrame {
 int estadoOperacion = 0;  
 float[] coef2x2 = new float[6];  
 int contadorEcuacion2x2 = 0;
-float[] coef3x3 = new float[12];
+float[] coef3x3 = new float[12]; 
 int contadorEcuacion3x3 = 0;
 int cantVectores = 0;
 int cantElementos = 0;
@@ -65,8 +64,6 @@ float escalar;
 int filasA, colsA, filasB, colsB;
 float[][] matrizA;
 float[][] matrizB;
-int operacionVector = 0;
-int columnasA, columnasB;
 
 
 
@@ -87,15 +84,17 @@ int columnasA, columnasB;
 	    if (n == 2) return m[0][0]*m[1][1] - m[0][1]*m[1][0];
 	    float det = 0;
 	    for (int j = 0; j < n; j++) {
-	        float[][] menor = new float[n-1][n-1];
+	        float[][] minor = new float[n-1][n-1];
 	        for (int i = 1; i < n; i++)
 	            for (int k = 0; k < n; k++)
 	                if (k != j)
-	                    menor[i-1][k < j ? k : k-1] = m[i][k];
-	        det += Math.pow(-1, j) * m[0][j] * determinante(menor);
+	                    minor[i-1][k < j ? k : k-1] = m[i][k];
+	        det += Math.pow(-1, j) * m[0][j] * determinante(minor);
 	    }
 	    return det;
 	}
+	
+
 
 	private float[][] convertirA2D(float[][][] array3D, int posicion, int filas, int columnas) {
 	    float[][] resultado = new float[filas][columnas];
@@ -132,7 +131,7 @@ int columnasA, columnasB;
 	            return null; 
 	        for (int j = 0; j < 2 * n; j++)
 	            extendida[i][j] /= pivote;
-	        
+
 	        for (int k = 0; k < n; k++) {
 	            if (k != i) {
 	                float factor = extendida[k][i];
@@ -195,18 +194,12 @@ int columnasA, columnasB;
 		pantalla.setLineWrap(true);
 		pantalla.setWrapStyleWord(true);
 		pantalla.setEditable(false);
-		pantalla.setBackground(new Color(230, 245, 210));
-		pantalla.setBorder(BorderFactory.createCompoundBorder(
-		    BorderFactory.createMatteBorder(3, 3, 6, 6, new Color(120, 120, 120)),
-		    BorderFactory.createEmptyBorder(5, 5, 5, 5)
-		));
-		pantalla.setFont(new Font("Monospaced", Font.BOLD, 14));
-		pantalla.setForeground(new Color(30, 30, 30));
+		pantalla.setBackground(new Color(198, 224, 180));
+		pantalla.setBorder(BorderFactory.createMatteBorder(3, 3, 6, 6, new Color(100, 100, 100)));
+		pantalla.setFont(new Font("Monospaced", Font.BOLD, 15));
 
 		JScrollPane scroll = new JScrollPane(pantalla);
 		scroll.setBounds(20, 32, 340, 77);
-		scroll.setOpaque(false);
-		scroll.getViewport().setOpaque(false);
 		contentPane.add(scroll);
 
 		boton2 = new JButton("2");
@@ -363,16 +356,15 @@ int columnasA, columnasB;
 		contentPane.add(botonIgual);
 		botonIgual.addActionListener(e -> {
 		    try {
-		        if (estadoOperacion == -1) { 
+		        if (estadoOperacion == -1) {  
 		            int opcion = Integer.parseInt(bufferNumero.trim());
 		            bufferNumero = "";
 		            switch (opcion) {
-		            case 1: 
-		            case 2: 
-		                operacionVector = opcion;  
-		                pantalla.append("\nIngrese cantidad de vectores (minimo 2): ");
-		                estadoOperacion = 1;
-		                break;
+		                case 1: 
+		                case 2: 
+		                    pantalla.append("\nIngrese cantidad de vectores (mínimo 2): ");
+		                    estadoOperacion = 1;
+		                    break;
 		                case 3: 
 		                    pantalla.append("\nIngrese cantidad de elementos del vector: ");
 		                    estadoOperacion = 4;
@@ -396,63 +388,44 @@ int columnasA, columnasB;
 		        if (estadoOperacion == -2) {
 		            opcionMatriz = Integer.parseInt(bufferNumero.trim());
 		            bufferNumero = "";
-		            if (opcionMatriz == 1) {
-		                pantalla.append("\nIngrese cantidad de filas para la suma: ");
-		                estadoOperacion = 21;
-		            } 
-		            else if (opcionMatriz == 2) {
-		                pantalla.append("\nIngrese cantidad de filas para la resta: ");
-		                estadoOperacion = 22;
-		            } 
-		            else if (opcionMatriz == 3) {
-		                pantalla.append("\nIngrese cantidad de filas para multiplicacion por escalar: ");
-		                estadoOperacion = 23;
-		            } 
-		            else if (opcionMatriz == 4) {
-		            	pantalla.append("\nIngrese cantidad de filas de la matriz A para multiplicacion: ");
-		                estadoOperacion = 24;
-		            }  
-		            else if (opcionMatriz == 5) {
+		            if (opcionMatriz >= 1 && opcionMatriz <= 4) {
+		                pantalla.append("\nIngrese cantidad de filas: ");
+		                estadoOperacion = 20;
+		            } else if (opcionMatriz == 5) {
 		                pantalla.append("\nIngrese cantidad de filas: ");
 		                estadoOperacion = 110;  
-		            } 
-		            else if (opcionMatriz == 6) {
+		            } else if (opcionMatriz == 6) {
 		                pantalla.append("\nIngrese orden de la matriz cuadrada: ");
 		                estadoOperacion = 100;  
-		            } 
-		            else if (opcionMatriz == 7) {
+		            } else if (opcionMatriz == 7) {
 		                pantalla.append("\nIngrese orden de la matriz cuadrada: ");
 		                estadoOperacion = 120;  
-		            } 
-		            else if (opcionMatriz == 8) {
+		            } else if (opcionMatriz == 8) {
 		                pantalla.append("\nIngrese orden de la matriz cuadrada: ");
 		                estadoOperacion = 130;  
-		            } 
-		            else {
+		            } else {
 		                pantalla.append("\nOpcion no valida");
 		                estadoOperacion = 0;
 		            }
 		            return;
 		        }
-		        
 		        if (estadoOperacion == -3) { 
 		            int opcion = Integer.parseInt(bufferNumero.trim());
 		            bufferNumero = "";
 		            if (opcion == 1) {
 		                pantalla.append("\nIngrese a1: ");
 		                estadoOperacion = 201;
-		            } 
-		            else if (opcion == 2) {
+		            } else if (opcion == 2) {
 		                pantalla.append("\nIngrese a1: ");
 		                estadoOperacion = 301;
-		            } 
-		            else {
+		            } else {
 		                pantalla.append("\nOpcion no valida");
 		                estadoOperacion = 0;
 		            }
 		            return;
 		        }
-		            
+		        
+
 		        if (estadoOperacion == 20) {
 		            filas = Integer.parseInt(bufferNumero.trim());
 		            bufferNumero = "";
@@ -467,12 +440,10 @@ int columnasA, columnasB;
 		            if (opcionMatriz == 3) { 
 		                pantalla.append("\nIngrese escalar: ");
 		                estadoOperacion = 23;
-		            } 
-		            else if (opcionMatriz == 4 || opcionMatriz == 5) {
+		            } else if (opcionMatriz == 4 || opcionMatriz == 5) {
 		                pantalla.append("\nIngrese cantidad de columnas de la segunda matriz: ");
 		                estadoOperacion = 24;
-		            } 
-		            else {
+		            } else {
 		                pantalla.append("\nIngrese elemento [1][1] de la matriz 1: ");
 		                matrices = new float[2][filas * columnas][1];
 		                matrizActual = 0;
@@ -483,6 +454,7 @@ int columnasA, columnasB;
 		            return;
 		        }
 
+		   
 		        if (estadoOperacion == 22) {
 		            matrices[matrizActual][filaActual * columnas + columnaActual][0] = Float.parseFloat(bufferNumero.trim());
 		            bufferNumero = "";
@@ -513,17 +485,16 @@ int columnasA, columnasB;
 		                        pantalla.append("\n");
 		                    }
 		                    estadoOperacion = 0;
-		                } 
-		                else {
+		                } else {
 		                    pantalla.append("\nIngrese elemento [1][1] de la matriz 2: ");
 		                }
-		            } 
-		            else {
+		            } else {
 		                pantalla.append("\nIngrese elemento [" + (filaActual + 1) + "][" + (columnaActual + 1) + "] de la matriz " + (matrizActual + 1) + ": ");
 		            }
 		            return;
 		        }
 
+		       
 		        if (estadoOperacion == 23){
 		        escalar = Float.parseFloat(bufferNumero.trim());
 		        bufferNumero = "";
@@ -554,52 +525,55 @@ int columnasA, columnasB;
 		                pantalla.append("\n");
 		            }
 		            estadoOperacion = 0;
-		        } 
-		        else {
+		        } else {
 		            pantalla.append("\nIngrese elemento [" + (filaActual + 1) + "][" + (columnaActual + 1) + "]: ");
 		        }
 		        return;
 		        }
 
 
-		        if (estadoOperacion == 24) {
-		            filas = Integer.parseInt(bufferNumero.trim());
-		            bufferNumero = "";
-		            pantalla.append("\nIngrese cantidad de columnas de la matriz A: ");
-		            estadoOperacion = 244;
-		            return;
-		        }
+		  
+		    if (estadoOperacion == 24){
+		        columnas = Integer.parseInt(bufferNumero.trim());
+		        bufferNumero = "";
+		        pantalla.append("\nIngrese elemento [1][1] de la matriz 1: ");
+		        matrices = new float[2][filas * columnas][1];
+		        matrizActual = 0;
+		        filaActual = 0;
+		        columnaActual = 0;
+		        estadoOperacion = 26;
+		        return;
+		    }
 
-		        if (estadoOperacion == 26) {
-		            matrices[matrizActual][filaActual * ((matrizActual == 0) ? columnasA : columnasB) + columnaActual][0] = Float.parseFloat(bufferNumero.trim());
-		            bufferNumero = "";
-		            columnaActual++;
-		            int columnasActual = (matrizActual == 0) ? columnasA : columnasB;
-		            if (columnaActual == columnasActual) {
-		                columnaActual = 0;
-		                filaActual++;
-		            }
-		            int filasActual = (matrizActual == 0) ? filas : filasB;
-		            if (filaActual == filasActual) {
-		                matrizActual++;
-		                filaActual = 0;
-		                columnaActual = 0;
-		                if (matrizActual == 2) {
-		                    float[][] A = convertirA2D(matrices, 0, filas, columnasA);
-		                    float[][] B = convertirA2D(matrices, 1, filasB, columnasB);
-		                    float[][] resultado = multiplicarMatrices(A, B);
-		                    pantalla.append("\nResultado:\n");
-		                    imprimirMatriz(resultado);
-		                    estadoOperacion = 0;
-		                } else {
-		                    pantalla.append("\nIngrese elemento [1][1] de la matriz 2: ");
-		                }
-		            } else {
-		                pantalla.append("\nIngrese elemento [" + (filaActual + 1) + "][" + (columnaActual + 1) + "] de la matriz " + (matrizActual + 1) + ": ");
-		            }
-		            return;
+		    if (estadoOperacion == 26)
+		    {
+		        matrices[matrizActual][filaActual * columnas + columnaActual][0] = Float.parseFloat(bufferNumero.trim());
+		        bufferNumero = "";
+		        columnaActual++;
+		        if (columnaActual == columnas) {
+		            columnaActual = 0;
+		            filaActual++;
 		        }
-		    
+		        if (filaActual == filas) {
+		            matrizActual++;
+		            filaActual = 0;
+		            columnaActual = 0;
+		            if (matrizActual == 2) {
+		                float[][] A = convertirA2D(matrices, 0, filas, columnas);
+		                float[][] B = convertirA2D(matrices, 1, columnas, columnas);
+		                float[][] resultado = multiplicarMatrices(A, B);
+		                pantalla.append("\nResultado:\n");
+		                imprimirMatriz(resultado);
+		                estadoOperacion = 0;
+		            } else {
+		                pantalla.append("\nIngrese elemento [1][1] de la matriz 2: ");
+		            }
+		        } else {
+		            pantalla.append("\nIngrese elemento [" + (filaActual + 1) + "][" + (columnaActual + 1) + "] de la matriz " + (matrizActual + 1) + ": ");
+		        }
+		        return;
+		    }
+
 		    if (estadoOperacion == 100) {
 		        filas = columnas = Integer.parseInt(bufferNumero.trim());
 		        bufferNumero = "";
@@ -655,53 +629,7 @@ int columnasA, columnasB;
 		        estadoOperacion = 112;
 		        return;
 		    }
-		    
-		    if (estadoOperacion == 244) {
-		        columnasA = Integer.parseInt(bufferNumero.trim());
-		        bufferNumero = "";
-		        pantalla.append("\nIngrese cantidad de filas de la matriz B (debe ser igual a columnas de matriz A): ");
-		        estadoOperacion = 240;
-		        return;
-		    }
-		    
-		    if (estadoOperacion == 240) {
-		        filasB = Integer.parseInt(bufferNumero.trim());
-		        bufferNumero = "";
-		        if (filasB != columnasA) {
-		            pantalla.append("\nError: la cantidad de filas de la matriz B debe ser igual a las columnas de matriz A (" + columnasA + ").\n");
-		            estadoOperacion = 0;
-		            return;
-		        }
-		        pantalla.append("\nIngrese cantidad de columnas de la matriz B: ");
-		        estadoOperacion = 241;
-		        return;
-		    }
-		    
-		    if (estadoOperacion == 241) {
-		        columnasB = Integer.parseInt(bufferNumero.trim());
-		        bufferNumero = "";
-		        pantalla.append("\nIngrese elemento [1][1] de la matriz A: ");
-		        matrices = new float[2][filas * columnasA][1];  
-		        matrizActual = 0;
-		        filaActual = 0;
-		        columnaActual = 0;
-		        estadoOperacion = 26;  
-		        return;
-		    }
-		    
-		    if (estadoOperacion == 242) {
-		        columnasB = Integer.parseInt(bufferNumero.trim());  
-		        bufferNumero = "";
-		        pantalla.append("\nIngrese elemento [1][1] de la matriz 1: ");
-		        matrices = new float[2][filas * columnasA][1]; 
-		        matrizActual = 0;
-		        filaActual = 0;
-		        columnaActual = 0;
-		        estadoOperacion = 26;
-		        return;
-		    }
-		    
-		    
+
 		    if (estadoOperacion == 112) {
 		        matrices[0][filaActual * columnas + columnaActual][0] = Float.parseFloat(bufferNumero.trim());
 		        bufferNumero = "";
@@ -721,7 +649,6 @@ int columnasA, columnasB;
 		        }
 		        return;
 		    }
-		    
 		    if (estadoOperacion == 120)
 		    {
 		        filas = columnas = Integer.parseInt(bufferNumero.trim());
@@ -747,19 +674,16 @@ int columnasA, columnasB;
 		            float[][] inv = inversa(mat);
 		            if (inv == null) {
 		                pantalla.append("\nLa matriz no tiene inversa.\n");
-		            } 
-		            else {
+		            } else {
 		                pantalla.append("\nMatriz inversa:\n");
 		                imprimirMatriz(inv);
 		            }
 		            estadoOperacion = 0;
-		        } 
-		        else {
+		        } else {
 		            pantalla.append("\nIngrese elemento [" + (filaActual + 1) + "][" + (columnaActual + 1) + "]: ");
 		        }
 		        return;
 		    }
-
 		    if (estadoOperacion == 130)
 		    {
 		        filas = Integer.parseInt(bufferNumero.trim());
@@ -820,10 +744,10 @@ int columnasA, columnasB;
 		        coef2x2[contadorEcuacion2x2++] = Float.parseFloat(bufferNumero.trim());
 		        bufferNumero = "";
 		        if (contadorEcuacion2x2 == 1) pantalla.append("\nIngrese b1: ");
-		        else if (contadorEcuacion2x2 == 2) pantalla.append("\nIngrese r1: ");
+		        else if (contadorEcuacion2x2 == 2) pantalla.append("\nIngrese c1: ");
 		        else if (contadorEcuacion2x2 == 3) pantalla.append("\nIngrese a2: ");
 		        else if (contadorEcuacion2x2 == 4) pantalla.append("\nIngrese b2: ");
-		        else if (contadorEcuacion2x2 == 5) pantalla.append("\nIngrese r2: ");
+		        else if (contadorEcuacion2x2 == 5) pantalla.append("\nIngrese c2: ");
 		        else if (contadorEcuacion2x2 == 6) {
 		            float a1 = coef2x2[0], b1 = coef2x2[1], c1 = coef2x2[2];
 		            float a2 = coef2x2[3], b2 = coef2x2[4], c2 = coef2x2[5];
@@ -847,9 +771,9 @@ int columnasA, columnasB;
 		        coef3x3[contadorEcuacion3x3++] = Float.parseFloat(bufferNumero.trim());
 		        bufferNumero = "";
 		        String[] etiquetas = {
-		            "b1", "c1", "r1",
-		            "a2", "b2", "c2", "r2",
-		            "a3", "b3", "c3", "r3"
+		            "b1", "c1", "d1",
+		            "a2", "b2", "c2", "d2",
+		            "a3", "b3", "c3", "d3"
 		        };
 		        if (contadorEcuacion3x3 <= 11) {
 		            pantalla.append("\nIngrese " + etiquetas[contadorEcuacion3x3 - 1] + ": ");
@@ -882,103 +806,103 @@ int columnasA, columnasB;
 		    }
 
 		        switch (estadoOperacion) {
-		            case 0:
-		            	String texto = pantalla.getText();
-		            	double resultado = 0;
+		        case 0:
+	            	String texto = pantalla.getText();
+	            	double resultado = 0;
 
-		            	texto = texto.replace(',', '.'); 
+	            	texto = texto.replace(',', '.'); 
 
-		            	try {
-		            	    if (texto.contains("+")) {
-		            	        String[] partes = texto.split("\\+");
-		            	        if (partes.length == 2) {
-		            	            resultado = Double.parseDouble(partes[0].trim()) + Double.parseDouble(partes[1].trim());
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    } 
-		            	    else if (texto.contains("-")) {
-		            	        int pos = -1;
-		            	        for (int i = 1; i < texto.length(); i++) {
-		            	            if (texto.charAt(i) == '-') {
-		            	                pos = i;
-		            	                break;
-		            	            }
-		            	        }
+	            	try {
+	            	    if (texto.contains("+")) {
+	            	        String[] partes = texto.split("\\+");
+	            	        if (partes.length == 2) {
+	            	            resultado = Double.parseDouble(partes[0].trim()) + Double.parseDouble(partes[1].trim());
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    } 
+	            	    else if (texto.contains("-")) {
+	            	        int pos = -1;
+	            	        for (int i = 1; i < texto.length(); i++) {
+	            	            if (texto.charAt(i) == '-') {
+	            	                pos = i;
+	            	                break;
+	            	            }
+	            	        }
 
-		            	        if (pos != -1) {
-		            	            String parte1 = texto.substring(0, pos);
-		            	            String parte2 = texto.substring(pos + 1);
-		            	            resultado = Double.parseDouble(parte1.trim()) - Double.parseDouble(parte2.trim());
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    }
-		            	    else if (texto.contains("x")) {
-		            	        String[] partes = texto.split("x");
-		            	        if (partes.length == 2) {
-		            	            resultado = Double.parseDouble(partes[0].trim()) * Double.parseDouble(partes[1].trim());
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    }
-		            	    else if (texto.contains("÷")) {
-		            	        String[] partes = texto.split("÷");
-		            	        if (partes.length == 2) {
-		            	            resultado = Double.parseDouble(partes[0].trim()) / Double.parseDouble(partes[1].trim());
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    }
-		            	    else if (texto.contains("^")) {
-		            	        String[] partes = texto.split("\\^");
-		            	        if (partes.length == 2) {
-		            	            resultado = Math.pow(Double.parseDouble(partes[0].trim()), Double.parseDouble(partes[1].trim()));
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    }
-		            	    else if (texto.contains("√")) {
-		            	        String[] partes = texto.split("√");
-		            	        if (partes.length == 2 && !partes[0].isEmpty() && !partes[1].isEmpty()) {
-		            	            double indice = Double.parseDouble(partes[0].trim());
-		            	            double radicando = Double.parseDouble(partes[1].trim());
-		            	            resultado = Math.pow(radicando, 1.0 / indice);
-		            	        } 
-		            	        else {
-		            	            pantalla.setText("Error: operacion mal formada");
-		            	            return;
-		            	        }
-		            	    } 
-		            	    else {
-		            	        pantalla.append("\nOperacion no reconocida");
-		            	        return;
-		            	    }
-		            	    
-		            	    DecimalFormat formato = new DecimalFormat("#.########");
-		            	    String resultadoFormateado = formato.format(resultado);
-		            	    pantalla.setText(resultadoFormateado);
-		            	    ultimoResultado = resultadoFormateado;
-		            	    
-		            	    pantalla.setText(String.valueOf(resultado));
-		            	    ultimoResultado = String.valueOf(resultado);
-		            	} catch (Exception ex) {
-		            	    pantalla.setText("Error");
-		            	}
-		            	bufferNumero = "";
-		                break;
+	            	        if (pos != -1) {
+	            	            String parte1 = texto.substring(0, pos);
+	            	            String parte2 = texto.substring(pos + 1);
+	            	            resultado = Double.parseDouble(parte1.trim()) - Double.parseDouble(parte2.trim());
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    }
+	            	    else if (texto.contains("x")) {
+	            	        String[] partes = texto.split("x");
+	            	        if (partes.length == 2) {
+	            	            resultado = Double.parseDouble(partes[0].trim()) * Double.parseDouble(partes[1].trim());
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    }
+	            	    else if (texto.contains("÷")) {
+	            	        String[] partes = texto.split("÷");
+	            	        if (partes.length == 2) {
+	            	            resultado = Double.parseDouble(partes[0].trim()) / Double.parseDouble(partes[1].trim());
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    }
+	            	    else if (texto.contains("^")) {
+	            	        String[] partes = texto.split("\\^");
+	            	        if (partes.length == 2) {
+	            	            resultado = Math.pow(Double.parseDouble(partes[0].trim()), Double.parseDouble(partes[1].trim()));
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    }
+	            	    else if (texto.contains("√")) {
+	            	        String[] partes = texto.split("√");
+	            	        if (partes.length == 2 && !partes[0].isEmpty() && !partes[1].isEmpty()) {
+	            	            double indice = Double.parseDouble(partes[0].trim());
+	            	            double radicando = Double.parseDouble(partes[1].trim());
+	            	            resultado = Math.pow(radicando, 1.0 / indice);
+	            	        } 
+	            	        else {
+	            	            pantalla.setText("Error: operacion mal formada");
+	            	            return;
+	            	        }
+	            	    } 
+	            	    else {
+	            	        pantalla.append("\nOperacion no reconocida");
+	            	        return;
+	            	    }
+	            	    
+	            	    DecimalFormat formato = new DecimalFormat("#.########");
+	            	    String resultadoFormateado = formato.format(resultado);
+	            	    pantalla.setText(resultadoFormateado);
+	            	    ultimoResultado = resultadoFormateado;
+	            	    
+	            	    pantalla.setText(String.valueOf(resultado));
+	            	    ultimoResultado = String.valueOf(resultado);
+	            	} catch (Exception ex) {
+	            	    pantalla.setText("Error");
+	            	}
+	            	bufferNumero = "";
+	                break;
 
-		            case 1:
+		            case 1:  
 		                cantVectores = Integer.parseInt(bufferNumero.trim());
 		                bufferNumero = "";
 		                if (cantVectores < 2) {
@@ -990,7 +914,7 @@ int columnasA, columnasB;
 		                estadoOperacion = 2;
 		                break;
 
-		            case 2:
+		            case 2:  
 		                cantElementos = Integer.parseInt(bufferNumero.trim());
 		                bufferNumero = "";
 		                vectores = new float[cantVectores][cantElementos];
@@ -1000,7 +924,7 @@ int columnasA, columnasB;
 		                estadoOperacion = 3;
 		                break;
 
-		            case 3:
+		            case 3: 
 		                vectores[vectorActual][elementoActual] = Float.parseFloat(bufferNumero.trim());
 		                bufferNumero = "";
 		                elementoActual++;
@@ -1010,13 +934,12 @@ int columnasA, columnasB;
 		                }
 		                if (vectorActual == cantVectores) {
 		                    float[] resultadoVector = new float[cantElementos];
-		                    if (operacionVector == 1) {
+		                    if (pantalla.getText().contains("Suma")) {
 		                        for (int i = 0; i < cantVectores; i++)
 		                            for (int j = 0; j < cantElementos; j++)
 		                                resultadoVector[j] += vectores[i][j];
 		                        pantalla.append("\nResultado de la suma: ");
-		                    } 
-		                    else if (operacionVector == 2) {
+		                    } else {
 		                        for (int j = 0; j < cantElementos; j++)
 		                            resultadoVector[j] = vectores[0][j];
 		                        for (int i = 1; i < cantVectores; i++)
@@ -1032,14 +955,12 @@ int columnasA, columnasB;
 		                    }
 		                    pantalla.append(")\n");
 		                    estadoOperacion = 0;
-		                    operacionVector = 0; 
-		                } 
-		                else {
+		                } else {
 		                    pantalla.append("\nIngrese elemento " + (elementoActual + 1) + " del vector " + (vectorActual + 1) + ": ");
 		                }
 		                break;
 
-		            case 4:  
+		            case 4: 
 		                cantElementos = Integer.parseInt(bufferNumero.trim());
 		                bufferNumero = "";
 		                vectores = new float[1][cantElementos];
@@ -1049,7 +970,7 @@ int columnasA, columnasB;
 		                estadoOperacion = 5;
 		                break;
 
-		            case 5: 
+		            case 5:  
 		                vectores[0][elementoActual] = Float.parseFloat(bufferNumero.trim());
 		                bufferNumero = "";
 		                elementoActual++;
@@ -1087,7 +1008,7 @@ int columnasA, columnasB;
 		                estadoOperacion = 8;
 		                break;
 
-		            case 8: 
+		            case 8:  
 		                vectores[vectorActual][elementoActual] = Float.parseFloat(bufferNumero.trim());
 		                bufferNumero = "";
 		                elementoActual++;
@@ -1146,6 +1067,21 @@ int columnasA, columnasB;
 		                } else {
 		                    pantalla.append("\nIngrese elemento " + (elementoActual + 1) + " del vector " + (vectorActual + 1) + ": ");
 		                }
+		                break;
+		                
+		            case 110:
+		                pantalla.append("\n[Transpuesta] Funcionalidad pendiente de implementacion.");
+		                estadoOperacion = 0;
+		                break;
+
+		            case 120:
+		                pantalla.append("\n[Inversa] Funcionalidad pendiente de implementacion.");
+		                estadoOperacion = 0;
+		                break;
+
+		            case 130:
+		                pantalla.append("\n[División de matrices] Funcionalidad pendiente de implementacion.");
+		                estadoOperacion = 0;
 		                break;
 
 		            default:
@@ -1271,10 +1207,10 @@ int columnasA, columnasB;
 		botonPotenciacion.addActionListener(e -> pantalla.setText(pantalla.getText() + "^"));
 		contentPane.add(botonPotenciacion);
 
-		lblOperacionesBasicas = new JLabel("Operaciones basicas");
-		lblOperacionesBasicas.setFont(new Font("Sylfaen", Font.ITALIC, 11));
-		lblOperacionesBasicas.setBounds(370, 164, 130, 14);
-		contentPane.add(lblOperacionesBasicas);
+		label_operaciones_basicas = new JLabel("Operaciones básicas");
+		label_operaciones_basicas.setFont(new Font("Sylfaen", Font.ITALIC, 11));
+		label_operaciones_basicas.setBounds(370, 164, 130, 14);
+		contentPane.add(label_operaciones_basicas);
 
 		botonVectores = new JButton("Vectores");
 		botonVectores.setForeground(Color.WHITE);
@@ -1302,13 +1238,13 @@ int columnasA, columnasB;
 		botonMatrices.setBounds(370, 80, 121, 23);
 		contentPane.add(botonMatrices);
 		botonMatrices.addActionListener(e -> {
-		    pantalla.setText("Menu matrices:\n1. Suma de matrices\n2. Resta de matrices\n3. Multiplicacióon por escalar\n4. Multiplicacion de matrices\n5. Transpuesta de una matriz\n6. Determinante de una matriz\n7. Inversa de una matriz\n8. Division de matrices\nSeleccione opcion: ");
+		    pantalla.setText("Menu matrices:\n1. Suma de matrices\n2. Resta de matrices\n3. Multiplicacion por escalar\n4. Multiplicacion de matrices\n5. Transpuesta de una matriz\n6. Determinante de una matriz\n7. Inversa de una matriz\n8. Division de matrices\nSeleccione opcion: ");
 		    bufferNumero = "";
 		    estadoOperacion = -2;
 		});
 		lblOperacionesMatrices = new JLabel("Operaciones matrices");
 		lblOperacionesMatrices.setFont(new Font("Sylfaen", Font.ITALIC, 11));
-		lblOperacionesMatrices.setBounds(370, 69, 130, 14);
+		lblOperacionesMatrices.setBounds(370, 67, 130, 14);
 		contentPane.add(lblOperacionesMatrices);
 		
 		botonEcuaciones = new JButton("Ecuaciones");
@@ -1323,12 +1259,12 @@ int columnasA, columnasB;
 		botonEcuaciones.setFont(new Font("Sylfaen", Font.ITALIC, 11));
 		botonEcuaciones.setBorder(BorderFactory.createMatteBorder(2, 2, 6, 6, new Color(60, 0, 10)));
 		botonEcuaciones.setBackground(new Color(109, 7, 26));
-		botonEcuaciones.setBounds(370, 118, 121, 23);
+		botonEcuaciones.setBounds(370, 120, 121, 23);
 		contentPane.add(botonEcuaciones);
 		
 		JLabel lblOperacionesEcuaciones = new JLabel("Operaciones Ecuaciones");
 		lblOperacionesEcuaciones.setFont(new Font("Sylfaen", Font.ITALIC, 11));
-		lblOperacionesEcuaciones.setBounds(370, 106, 130, 14);
+		lblOperacionesEcuaciones.setBounds(370, 107, 130, 14);
 		contentPane.add(lblOperacionesEcuaciones);
 	}
 }
